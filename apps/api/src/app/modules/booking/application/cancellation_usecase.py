@@ -26,10 +26,8 @@ SIMULATION_NOTE = "Pagamento simulado: nenhum valor real foi cobrado nem será d
 BUYER_REASON = "Cancelado pelo comprador."
 SESSION_REASON = "Sessão cancelada pelo teatro."
 
-
 def _refund_cents(order: PaymentOrder, percent: int) -> int:
     return order.amount_cents * percent // 100
-
 
 async def cancel_paid_order(
     db: AsyncSession, order: PaymentOrder, reservation: Reservation | None, *, now: datetime,
@@ -72,7 +70,6 @@ async def cancel_paid_order(
         },
     ))
 
-
 async def cancel_paid_orders_for_session(db: AsyncSession, session_id: UUID, now: datetime, admin_id: UUID | None) -> None:
     """Session cancelled by the theatre: every paid order is cancelled with a 100% simulated refund."""
     orders = list(await db.scalars(select(PaymentOrder).where(
@@ -84,7 +81,6 @@ async def cancel_paid_orders_for_session(db: AsyncSession, session_id: UUID, now
         await cancel_paid_order(db, order, reservation, now=now, origin=CancelOrigin.SESSION,
                                 by=admin_id, reason=SESSION_REASON, percent=100)
     await db.flush()
-
 
 class CancellationUseCase:
     def __init__(self, db: AsyncSession) -> None:

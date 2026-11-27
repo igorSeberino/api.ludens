@@ -10,7 +10,6 @@ from sqlalchemy.orm import Mapped, mapped_column
 
 from app.core.domain import Model
 
-
 class OrderStatus(str, Enum):
     PENDING = "pending"
     PAID = "paid"
@@ -18,17 +17,14 @@ class OrderStatus(str, Enum):
     EXPIRED = "expired"
     CANCELLED = "cancelled"
 
-
 class TicketStatus(str, Enum):
     VALID = "valid"
     USED = "used"
     CANCELLED = "cancelled"
 
-
 class CancelOrigin(str, Enum):
     BUYER = "buyer"
     SESSION = "session"
-
 
 def simulated_refund_percent(starts_at: datetime, now: datetime) -> int | None:
     """Simulated refund tier (RN02). None means the buyer may no longer cancel online."""
@@ -38,7 +34,6 @@ def simulated_refund_percent(starts_at: datetime, now: datetime) -> int | None:
     if hours >= 24:
         return 50
     return None
-
 
 class PaymentOrder(Model):
     __tablename__ = "payment_orders"
@@ -74,7 +69,6 @@ class PaymentOrder(Model):
     cancel_reason: Mapped[str | None] = mapped_column(String(300), nullable=True)
     refund_percent: Mapped[int | None] = mapped_column(Integer, nullable=True)
     refund_cents: Mapped[int | None] = mapped_column(Integer, nullable=True)
-
 
 class Ticket(Model):
     __tablename__ = "tickets"

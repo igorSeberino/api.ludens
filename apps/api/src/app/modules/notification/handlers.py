@@ -38,12 +38,10 @@ async def handle_account_deletion_requested(payload: dict) -> None:
 
     await get_email_service().send(payload["email"], subject, html_body)
 
-
 @register("OrderPaid")
 async def handle_order_paid(payload: dict) -> None:
     subject, html_body = order_paid_email(payload)
     await get_email_service().send(payload["email"], subject, html_body)
-
 
 @register("OrderCancelled")
 async def handle_order_cancelled(payload: dict) -> None:

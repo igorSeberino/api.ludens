@@ -4,7 +4,6 @@ from uuid import UUID
 
 from app.core.domain import DomainEvent
 
-
 @dataclass(frozen=True)
 class ReservationCreated(DomainEvent):
     id: UUID = field(kw_only=True)
@@ -21,16 +20,13 @@ class ReservationCreated(DomainEvent):
     venue: str = field(kw_only=True)
     expires_at: datetime = field(kw_only=True)
 
-
 @dataclass(frozen=True)
 class ReservationCancelled(DomainEvent):
     id: UUID = field(kw_only=True)
 
-
 @dataclass(frozen=True)
 class ReservationExpired(DomainEvent):
     id: UUID = field(kw_only=True)
-
 
 @dataclass(frozen=True)
 class ReservationConfirmed(DomainEvent):

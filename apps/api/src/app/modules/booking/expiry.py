@@ -8,12 +8,10 @@ from app.modules.booking.infrastructure.reservation_repository import Reservatio
 
 logger = logging.getLogger(__name__)
 
-
 async def expire_batch() -> int:
     async with AsyncSessionLocal() as db:
         async with db.begin():
             return await ReservationRepository(db).expire_due(datetime.now(timezone.utc))
-
 
 async def run() -> None:
     while True:

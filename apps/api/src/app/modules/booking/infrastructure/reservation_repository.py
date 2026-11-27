@@ -7,7 +7,6 @@ from app.core.infrastructure.repositories import AggregateRepository
 from app.modules.booking.domain.reservation import Reservation, ReservationStatus
 from app.modules.booking.domain.purchase import OrderStatus, PaymentOrder
 
-
 class ReservationRepository(AggregateRepository[Reservation]):
     model = Reservation
 

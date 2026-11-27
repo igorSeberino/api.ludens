@@ -1,6 +1,5 @@
 from html import escape
 
-
 def order_paid_email(payload: dict) -> tuple[str, str]:
     subject = "Seus ingressos de demonstração — Ludens"
     rows = "".join(
@@ -17,7 +16,6 @@ def order_paid_email(payload: dict) -> tuple[str, str]:
         "<p>Os ingressos permanecem disponíveis na área Meus ingressos mesmo se este e-mail não chegar.</p>"
     )
     return subject, html_body
-
 
 def order_cancelled_email(payload: dict) -> tuple[str, str]:
     by_theatre = payload["origin"] == "session"
@@ -38,7 +36,6 @@ def order_cancelled_email(payload: dict) -> tuple[str, str]:
         "<p>Este é um ambiente de demonstração: nenhum pagamento real foi feito e nenhum valor será devolvido.</p>"
     )
     return subject, html_body
-
 
 def password_reset_email(reset_url: str) -> tuple[str, str]:
     subject = "Redefinição de senha — Ludens"

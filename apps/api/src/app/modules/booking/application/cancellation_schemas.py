@@ -5,11 +5,9 @@ from pydantic import BaseModel, ConfigDict, Field
 
 from app.modules.booking.application.purchase_schemas import OrderResponse
 
-
 class CancellationRequest(BaseModel):
     model_config = ConfigDict(extra="forbid")
     reason: str | None = Field(default=None, max_length=300)
-
 
 class CancellationPreviewResponse(BaseModel):
     order_id: UUID
@@ -21,16 +19,13 @@ class CancellationPreviewResponse(BaseModel):
     message: str
     is_refund_simulated: Literal[True] = True
 
-
 class AdminOrderResponse(OrderResponse):
     buyer_name: str
     buyer_email: str
 
-
 class CheckInRequest(BaseModel):
     model_config = ConfigDict(extra="forbid")
     code: str = Field(min_length=1, max_length=48)
-
 
 class CheckInResponse(BaseModel):
     code: str

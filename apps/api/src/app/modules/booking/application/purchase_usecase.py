@@ -17,7 +17,6 @@ from app.modules.catalog.domain.aggregates import Session
 from app.modules.identity.domain.aggregates import User
 from app.outbox.models import Event
 
-
 class PurchaseUseCase:
     def __init__(self, db: AsyncSession) -> None:
         self._db = db
@@ -87,14 +86,7 @@ class PurchaseUseCase:
         now = await self._now()
 
         if order.status is not OrderStatus.PENDING:
-            # Repeated approval returns the already-issued order without duplicating tickets.
-            if outcome == "approved" and order.status is OrderStatus.PAID:
-                return await self._response(order)
-            if outcome == "declined" and order.status is OrderStatus.DECLINED:
-                return await self._response(order)
-            if order.status is OrderStatus.EXPIRED:
-                raise ConflictError("O prazo de confirmação do pedido expirou.")
-            raise ConflictError("O pedido já foi finalizado.")
+            return await self._completed_simulation(order, outcome)
 
         if reservation is None or reservation.status is not ReservationStatus.OPEN or reservation.expires_at <= now or order.expires_at <= now:
             await self._expire(order, reservation, now)
@@ -102,6 +94,20 @@ class PurchaseUseCase:
         if not bookable.on_sale:
             raise ConflictError("Esta sessão não está mais disponível para compra.")
 
+        return await self._apply_simulation(order, reservation, outcome, user, now)
+
+    async def _completed_simulation(self, order: PaymentOrder, outcome: str) -> OrderResponse:
+        if outcome == "approved" and order.status is OrderStatus.PAID:
+            return await self._response(order)
+        if outcome == "declined" and order.status is OrderStatus.DECLINED:
+            return await self._response(order)
+        if order.status is OrderStatus.EXPIRED:
+            raise ConflictError("O prazo de confirmação do pedido expirou.")
+        raise ConflictError("O pedido já foi finalizado.")
+
+    async def _apply_simulation(
+        self, order: PaymentOrder, reservation: Reservation, outcome: str, user: User, now: datetime,
+    ) -> OrderResponse:
         if outcome == "expired":
             reservation.expire(now, force=True)
             await self._reservations.save(reservation)
@@ -116,6 +122,11 @@ class PurchaseUseCase:
             order.resolved_at = now
             return await self._response(order)
 
+        return await self._approve(order, reservation, user, now)
+
+    async def _approve(
+        self, order: PaymentOrder, reservation: Reservation, user: User, now: datetime,
+    ) -> OrderResponse:
         reservation.confirm(now)
         await self._reservations.save(reservation)
         order.status = OrderStatus.PAID
@@ -130,7 +141,7 @@ class PurchaseUseCase:
         self._db.add_all(tickets)
         await self._db.flush()
         await self._queue_confirmation(order, user.email, tickets)
-        return self._response_with_tickets(order, tickets)
+        return await self._response(order)
 
     async def get(self, order_id: UUID, user: User) -> OrderResponse:
         order = await self._owned_order(order_id, user.id)
