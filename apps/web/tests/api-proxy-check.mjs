@@ -25,6 +25,13 @@ test('proxy preserves API prefix and normalizes trailing slash', async () => {
   }
 });
 
+test('proxy waits for a cold API longer than the 30s default', async () => {
+  const config = await loadConfig('https://demo.trycloudflare.com');
+  assert.equal(config.experimental?.proxyTimeout, 120_000);
+  const local = await loadConfig(undefined);
+  assert.equal(local.experimental?.proxyTimeout, undefined);
+});
+
 test('rejects invalid origins rather than sending credentials elsewhere', async () => {
   for (const url of ['invalid', 'ftp://example.com', 'https://user:pass@example.com',
     'https://example.com/api', 'https://example.com?x=1', 'https://example.com/#token']) {

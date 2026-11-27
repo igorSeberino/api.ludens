@@ -19,6 +19,9 @@ if (proxyUrl) {
 const nextConfig = {
   reactStrictMode: true,
   skipTrailingSlashRedirect: Boolean(apiOrigin),
+  // A sleeping free-tier API can take longer than Next's default 30s proxy
+  // timeout to boot; wait longer so the first request doesn't fail with 500.
+  ...(apiOrigin ? { experimental: { proxyTimeout: 120_000 } } : {}),
   async rewrites() {
     return apiOrigin ? [
       { source: '/api/:path(.*/)', destination: `${apiOrigin}/api/:path` },
