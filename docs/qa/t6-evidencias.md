@@ -5,24 +5,31 @@ Atende: R1, R5 · Plano: `docs/plano/00-visao-geral.md` §6 (T6)
 
 ## 1. SonarQube Cloud: antes × depois
 
-Antes = primeira análise da `master` (linha de base da T1). Depois = última análise da `master`.
+Projeto: [igorSeberino_app.ludens](https://sonarcloud.io/project/overview?id=igorSeberino_app.ludens).
+Antes = primeira análise da `master` (27/11/2026 16:58, `10a9cea`, análise automática, sem
+cobertura). Depois = análise da `master` após o merge da T3 (27/11/2026 18:58, `af8e0fe`).
 
-| Métrica | Antes (T1) | Depois | Variação |
+| Métrica | Antes | Depois | Variação |
 | --- | --- | --- | --- |
-| Bugs | _pendente_ | _pendente_ | |
-| Vulnerabilidades | _pendente_ | _pendente_ | |
-| Security hotspots | _pendente_ | _pendente_ | |
-| Code smells | _pendente_ | _pendente_ | |
-| Duplicação (%) | _pendente_ | _pendente_ | |
-| Cobertura (%) | _pendente_ | _pendente_ | |
-| Quality Gate | _pendente_ | _pendente_ | |
+| Bugs | 0 | 0 | = |
+| Vulnerabilidades | 14 | 0 | −14 |
+| Security hotspots (revisados) | 0 (100 %) | 0 (100 %) | = |
+| Code smells | 1 | 0 | −1 |
+| Duplicação | 0,5 % | 0,4 % | −0,1 p.p. |
+| Cobertura | sem dado | 73,5 % (API 85,3 % · web 54,5 %) | passou a ser medida |
+| Linhas de código | 16.119 | 12.402 | −3.717 |
+| Quality Gate | não calculado | **Failed** (só cobertura do código novo) | |
 
-Situação em 27/11/2026: ainda não há projeto do ludens no SonarQube Cloud
-(`api/components/search_projects?filter=query=ludens` → 0 resultados). A tabela depende da T1
-([#5](https://github.com/igorSeberino/app.ludens/issues/5)) para o "antes" e da T3/T4
-([#7](https://github.com/igorSeberino/app.ludens/issues/7), [#8](https://github.com/igorSeberino/app.ludens/issues/8)) para o "depois".
+Por app, no "depois": `apps/api/src` e `apps/web/src` com 0 bugs, 0 vulnerabilidades e 0 code
+smells; duplicação de 0,0 % na API e 0,6 % na web. Nenhuma issue aberta no projeto.
+
+Quality Gate: confiabilidade, segurança, manutenibilidade, duplicação e hotspots passam. Reprova
+só a cobertura do código novo da `master`: 77,4 %, abaixo dos 80 % do gate padrão (o PR da T3
+isolado passou com 82,6 %). Fica como débito: subir a cobertura da web ou ajustar o gate.
 
 ## 2. Teste de fumaça em https://ludens-web.onrender.com
+
+### Primeira rodada (deploy da `master` após o merge de #12 e #22)
 
 | Passo | Resultado | Data | Observação |
 | --- | --- | --- | --- |
@@ -36,7 +43,16 @@ Situação em 27/11/2026: ainda não há projeto do ludens no SonarQube Cloud
 | Compra simulada | ok | 27/11/2026 | "Simular aprovação" → "Compra confirmada"; ingresso DEMO emitido em Minhas compras |
 | Cancelamento | ok | 27/11/2026 | "Cancelar pedido" com motivo → pedido e ingresso cancelados, reembolso simulado de 100 % (R$ 40,00) |
 
-Ambiente testado: deploy da `master` após o merge de #12 e #22.
+### Rodada final (27/11/2026, deploy de `af8e0fe`, após a T3)
+
+| Passo | Resultado | Observação |
+| --- | --- | --- |
+| API e web no ar | ok | `/health` 200 e home 200 |
+| Login | ok | Sessão da conta de teste continuava ativa |
+| Busca | ok | Filtro "Drama" mostra só os dramas |
+| Reserva | ok | A Menina e o Vento, 07/12/2026 20:00, 1 inteira (R$ 40,00) |
+| Compra simulada | ok | "Compra confirmada" e ingresso DEMO emitido |
+| Cancelamento | ok | Pedido e ingresso cancelados, reembolso simulado de 100 % |
 
 ## 3. Revisão dos PRs de T1–T5
 
@@ -45,7 +61,7 @@ Ambiente testado: deploy da `master` após o merge de #12 e #22.
 | [#12](https://github.com/igorSeberino/app.ludens/pull/12) | T2 · deploy no Render e plano | @igorSeberino | aprovado e mergeado |
 | [#21](https://github.com/igorSeberino/app.ludens/pull/21) | T5 · documentação | @gabrielcarvallho | aprovado e mergeado |
 | [#22](https://github.com/igorSeberino/app.ludens/pull/22) | T2 · acordar a API junto com a web | @igorSeberino | aprovado e mergeado |
-| [#23](https://github.com/igorSeberino/app.ludens/pull/23) | T4 · DT-12 e DT-13 | @Diegonessler | aprovado |
-| _pendente_ | T1 · SonarQube Cloud | @igorSeberino | |
-| _pendente_ | T3 · backend no Sonar | | |
-| _pendente_ | T4 · apontamentos do Sonar no frontend | @Diegonessler | |
+| [#23](https://github.com/igorSeberino/app.ludens/pull/23) | T4 · DT-12 e DT-13 | @Diegonessler | aprovado e mergeado |
+| [#25](https://github.com/igorSeberino/app.ludens/pull/25) | T1 · SonarQube Cloud | @igorSeberino | aprovado e mergeado |
+| [#26](https://github.com/igorSeberino/app.ludens/pull/26) | T2 · acordar a API pelo navegador | @igorSeberino | mergeado sem revisão |
+| [#27](https://github.com/igorSeberino/app.ludens/pull/27) | T3 · backend no Sonar | @adrian-cesar | aprovado e mergeado |
