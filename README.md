@@ -18,6 +18,14 @@ O GitHub só lê workflows de `.github/workflows/` na raiz, então eles moram l�
   `pipelines.ludens`, chamados localmente (`uses: ./.github/workflows/_test.yaml`).
 * `api-ci.yml`: roda só quando `apps/api/**` muda.
 * `web-ci.yml`: roda só quando `apps/web/**` muda.
+* `sonar.yml`: roda os testes com cobertura de `apps/api` e `apps/web` e envia
+  a análise para o SonarQube Cloud a cada push na `master` e a cada PR.
+
+## Qualidade
+
+Análise no SonarQube Cloud:
+<https://sonarcloud.io/project/overview?id=igorSeberino_app.ludens>.
+A configuração fica em `sonar-project.properties`.
 
 ## Deploy
 
