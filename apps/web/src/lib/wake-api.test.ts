@@ -1,4 +1,21 @@
-import { wakeApi } from './wake-api';
+import { wakeApi, wakeApiFromBrowser } from './wake-api';
+
+describe('wakeApiFromBrowser', () => {
+  it('dispara GET no-cors para o /health da API', () => {
+    const fetchImpl = jest.fn().mockResolvedValue({} as Response);
+    wakeApiFromBrowser('https://api.example.com', fetchImpl);
+    expect(fetchImpl).toHaveBeenCalledWith('https://api.example.com/health',
+      expect.objectContaining({ mode: 'no-cors' }));
+  });
+
+  it('não faz nada sem origem e não lança com falha de rede', async () => {
+    const fetchImpl = jest.fn().mockRejectedValue(new Error('offline'));
+    wakeApiFromBrowser(undefined, fetchImpl);
+    expect(fetchImpl).not.toHaveBeenCalled();
+    expect(() => wakeApiFromBrowser('https://api.example.com', fetchImpl)).not.toThrow();
+    await new Promise((resolve) => setTimeout(resolve, 0));
+  });
+});
 
 function fakeClock() {
   let t = 0;

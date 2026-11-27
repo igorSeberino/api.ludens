@@ -6,7 +6,7 @@ export async function register() {
 
   const { wakeApi } = await import('./lib/wake-api');
   // Fire-and-forget: never delay the web server start.
-  void wakeApi(origin).then((awake) => {
+  void wakeApi(origin, { log: (message) => console.log(message) }).then((awake) => {
     if (!awake) console.warn(`[wake-api] ${origin}/health did not answer in time`);
   });
 }

@@ -22,6 +22,8 @@ const nextConfig = {
   // A sleeping free-tier API can take longer than Next's default 30s proxy
   // timeout to boot; wait longer so the first request doesn't fail with 500.
   ...(apiOrigin ? { experimental: { proxyTimeout: 120_000 } } : {}),
+  // Exposed to the browser so it can wake the sleeping API directly.
+  ...(apiOrigin ? { env: { NEXT_PUBLIC_API_WAKE_URL: apiOrigin } } : {}),
   async rewrites() {
     return apiOrigin ? [
       { source: '/api/:path(.*/)', destination: `${apiOrigin}/api/:path` },

@@ -1,10 +1,11 @@
 'use client';
 
-import { useState, type ReactNode } from 'react';
+import { useEffect, useState, type ReactNode } from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Toaster } from 'sonner';
 
 import { AuthProvider } from '@account/contexts/AuthContext';
+import { wakeApiFromBrowser } from '@web/lib/wake-api';
 
 type ProvidersProps = {
   children: ReactNode;
@@ -22,6 +23,10 @@ export function Providers({ children }: ProvidersProps) {
         },
       }),
   );
+
+  useEffect(() => {
+    wakeApiFromBrowser(process.env.NEXT_PUBLIC_API_WAKE_URL);
+  }, []);
 
   return (
     <QueryClientProvider client={queryClient}>

@@ -30,6 +30,8 @@ test('proxy waits for a cold API longer than the 30s default', async () => {
   assert.equal(config.experimental?.proxyTimeout, 120_000);
   const local = await loadConfig(undefined);
   assert.equal(local.experimental?.proxyTimeout, undefined);
+  assert.equal(config.env?.NEXT_PUBLIC_API_WAKE_URL, 'https://demo.trycloudflare.com');
+  assert.equal(local.env?.NEXT_PUBLIC_API_WAKE_URL, undefined);
 });
 
 test('rejects invalid origins rather than sending credentials elsewhere', async () => {
