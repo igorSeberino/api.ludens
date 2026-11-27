@@ -4,14 +4,12 @@ from uuid import UUID
 
 from pydantic import BaseModel, ConfigDict, Field
 
-
 class ReservationRequest(BaseModel):
     model_config = ConfigDict(extra="forbid")
     session_id: UUID
     idempotency_key: UUID
     full_quantity: int = Field(ge=0, le=6, strict=True)
     half_quantity: int = Field(ge=0, le=6, strict=True)
-
 
 class ReservationResponse(BaseModel):
     id: UUID
@@ -29,13 +27,11 @@ class ReservationResponse(BaseModel):
     expires_at: datetime
     server_now: datetime
 
-
 class RebookingSessionResponse(BaseModel):
     id: UUID
     starts_at: datetime
     venue: str
     available_count: int
-
 
 class RebookingOptionsResponse(BaseModel):
     sessions: list[RebookingSessionResponse]

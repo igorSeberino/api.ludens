@@ -22,7 +22,6 @@ from app.modules.identity.domain.value_objects import CPF, Email  # noqa: E402
 from app.modules.identity.infrastructure.repositories import UserRepository  # noqa: E402
 from app.modules.identity.infrastructure.services import PasswordService  # noqa: E402
 
-
 SHOWS = [
     ("Uma Noite de Risadas", "Comédia", "Uma família transforma um jantar simples em uma sequência de situações divertidas.", 4000, 80),
     ("Cartas do Amanhã", "Drama", "Dois amigos reencontram cartas antigas e descobrem novos caminhos para suas vidas.", 5000, 60),
@@ -32,7 +31,6 @@ SHOWS = [
     ("Pequeno Palco, Grandes Histórias", "Drama", "Moradores de uma comunidade compartilham lembranças em um espetáculo intimista.", 2000, 6),
 ]
 
-
 def demo_cpf(number: int) -> CPF:
     digits = [int(digit) for digit in f"{900000000 + number:09d}"]
     for length in (9, 10):
@@ -40,12 +38,17 @@ def demo_cpf(number: int) -> CPF:
         digits.append(0 if check == 10 else check)
     return CPF("".join(map(str, digits)))
 
+def _demo_password() -> str:
+    password = os.environ.get("DEMO_PASSWORD")
+    if not password:
+        raise SystemExit("Defina DEMO_PASSWORD antes de executar este script.")
+    return password
 
 async def seed_demo() -> None:
     if settings.environment != "development":
         raise SystemExit("Este script é destinado ao ambiente development.")
     now = datetime.now(timezone.utc)
-    password = os.environ.get("DEMO_PASSWORD", "Ludens123!")
+    password = _demo_password()
     created = {"users": 0, "genres": 0, "shows": 0, "sessions": 0, "reservations": 0}
 
     async with AsyncSessionLocal() as db, db.begin():
@@ -122,7 +125,6 @@ async def seed_demo() -> None:
             created["reservations"] += 1
     print(f"Dados fictícios criados: {created}")
     print("Dados existentes preservados. Reexecutar não duplica os exemplos.")
-
 
 if __name__ == "__main__":
     asyncio.run(seed_demo())

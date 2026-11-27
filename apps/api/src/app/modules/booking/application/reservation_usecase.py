@@ -17,14 +17,12 @@ from app.modules.catalog.domain.aggregates import Session
 from app.modules.booking.infrastructure.reservation_repository import ReservationRepository
 from app.modules.catalog.dependencies import lock_booking_session, rebooking_sessions
 
-
 def reservation_response(reservation: Reservation, now: datetime) -> ReservationResponse:
     values = {name: getattr(reservation, name) for name in ReservationResponse.model_fields if name != "server_now"}
     # A read remains correct even if another worker currently holds the expiry lock.
     if reservation.status == "open" and reservation.expires_at <= now:
         values["status"] = "expired"
     return ReservationResponse(**values, server_now=now)
-
 
 class ReservationUseCase:
     def __init__(self, db: AsyncSession) -> None:
@@ -86,7 +84,13 @@ class ReservationUseCase:
         reservations, total = await self._repository.list_owned(user_id, page=pagination.page, size=pagination.size)
         return Page(items=[reservation_response(r, now) for r in reservations], total=total, page=pagination.page, size=pagination.size)
 
-    async def get(self, reservation_id: UUID, user_id: UUID, *, cancel: bool = False) -> ReservationResponse:
+    async def get(self, reservation_id: UUID, user_id: UUID) -> ReservationResponse:
+        return await self._resolve(reservation_id, user_id, cancel=False)
+
+    async def cancel(self, reservation_id: UUID, user_id: UUID) -> ReservationResponse:
+        return await self._resolve(reservation_id, user_id, cancel=True)
+
+    async def _resolve(self, reservation_id: UUID, user_id: UUID, *, cancel: bool) -> ReservationResponse:
         reservation = await self._repository.find_owned(reservation_id, user_id, lock=False)
         if reservation is None:
             raise NotFoundError("Reserva não encontrada.")

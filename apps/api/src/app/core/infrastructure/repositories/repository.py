@@ -22,6 +22,14 @@ class BaseRepository(Generic[T]):
         result = await self._session.execute(stmt)
         return result.scalar_one_or_none()
 
+    async def find_by_token_hash_for_update(self, token_hash: str) -> T | None:
+        stmt = select(self.model).where(
+            getattr(self.model, "token_hash") == token_hash,
+            self.model.is_active.is_(True),
+        ).with_for_update().execution_options(populate_existing=True)
+        result = await self._session.execute(stmt)
+        return result.scalar_one_or_none()
+
     async def find_all(self, *, order_by: Sequence[str] | None = None) -> list[T]:
         return await self.find_all_by(order_by=order_by)
 

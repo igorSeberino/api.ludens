@@ -4,11 +4,9 @@ from uuid import UUID
 
 from pydantic import BaseModel, ConfigDict
 
-
 class SimulatedPaymentRequest(BaseModel):
     model_config = ConfigDict(extra="forbid")
     outcome: Literal["approved", "declined", "expired"]
-
 
 class TicketResponse(BaseModel):
     id: UUID
@@ -18,7 +16,6 @@ class TicketResponse(BaseModel):
     status: Literal["valid", "used", "cancelled"]
     checked_in_at: datetime | None = None
     is_demonstration: Literal[True] = True
-
 
 class OrderResponse(BaseModel):
     id: UUID

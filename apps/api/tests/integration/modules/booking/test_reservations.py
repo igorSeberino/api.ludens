@@ -132,10 +132,10 @@ async def test_cancel_ownership_idempotency_and_inventory(session):
     reservation = await reserve(session, event.id, users[0], full=2)
     uc = ReservationUseCase(session)
     with pytest.raises(NotFoundError):
-        await uc.get(reservation.id, users[1].id, cancel=True)
+        await uc.cancel(reservation.id, users[1].id)
     assert (await uc.get(reservation.id, users[0].id)).status == "open"
-    assert (await uc.get(reservation.id, users[0].id, cancel=True)).status == "cancelled"
-    assert (await uc.get(reservation.id, users[0].id, cancel=True)).status == "cancelled"
+    assert (await uc.cancel(reservation.id, users[0].id)).status == "cancelled"
+    assert (await uc.cancel(reservation.id, users[0].id)).status == "cancelled"
     assert (await SessionUseCase(session).get_session_detail(event.id, is_admin=False)).available_count == 2
     assert await session.scalar(select(func.count()).select_from(Event).where(Event.event_type == "ReservationCancelled")) == 1
 
@@ -275,7 +275,7 @@ async def test_concurrent_cpf_limit_serializes_even_with_spare_capacity(committe
 async def test_rebooking_sorts_other_future_sessions_and_excludes_unavailable_and_other_shows(session):
     original, users, show, genre = await seed(session)
     reservation = await reserve(session, original.id, users[0])
-    await ReservationUseCase(session).get(reservation.id, users[0].id, cancel=True)
+    await ReservationUseCase(session).cancel(reservation.id, users[0].id)
     original.starts_at = datetime.now(timezone.utc) - timedelta(days=1)
     now = datetime.now(timezone.utc)
 
@@ -406,7 +406,7 @@ async def test_cancelling_reservation_closes_its_pending_order(session):
     reservation = await reserve(session, event.id, users[0])
     order = await PurchaseUseCase(session).start(reservation.id, users[0])
 
-    await ReservationUseCase(session).get(reservation.id, users[0].id, cancel=True)
+    await ReservationUseCase(session).cancel(reservation.id, users[0].id)
     assert (await PurchaseUseCase(session).get(order.id, users[0])).status == "cancelled"
 
 

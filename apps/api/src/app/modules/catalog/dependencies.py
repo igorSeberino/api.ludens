@@ -12,7 +12,6 @@ from app.modules.catalog.infrastructure.repositories import SessionRepository
 from app.modules.catalog.domain.aggregates import Session, Show
 from app.modules.booking.dependencies import reservation_counts
 
-
 @dataclass(frozen=True)
 class BookableSession:
     id: UUID
@@ -23,7 +22,6 @@ class BookableSession:
     starts_at: datetime
     venue: str
     on_sale: bool
-
 
 async def lock_booking_session(db: AsyncSession, session_id: UUID) -> BookableSession:
     session = await SessionRepository(db).find_by_id_for_update(session_id)
@@ -38,14 +36,12 @@ async def lock_booking_session(db: AsyncSession, session_id: UUID) -> BookableSe
         on_sale=bool(show and show.is_published and session.status is SessionStatus.ON_SALE),
     )
 
-
 @dataclass(frozen=True)
 class RebookingSession:
     id: UUID
     starts_at: datetime
     venue: str
     available_count: int
-
 
 async def rebooking_sessions(db: AsyncSession, original_session_id: UUID, now: datetime) -> list[RebookingSession]:
     # Historical reservations keep their session FK even after it is deactivated.

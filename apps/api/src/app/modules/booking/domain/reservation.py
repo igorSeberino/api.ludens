@@ -11,13 +11,11 @@ from app.modules.booking.domain.events import (
     ReservationCancelled, ReservationConfirmed, ReservationCreated, ReservationExpired,
 )
 
-
 class ReservationStatus(str, Enum):
     OPEN = "open"
     CONFIRMED = "confirmed"
     EXPIRED = "expired"
     CANCELLED = "cancelled"
-
 
 class Reservation(AggregateRoot, Model):
     __tablename__ = "reservations"
